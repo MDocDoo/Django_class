@@ -1,0 +1,29 @@
+<http>
+    {% extends "base_bootstrap.html" %}
+    {% block title %}DJ4E Crispy Forms{% endblock %}
+    {% block welcome %}
+
+    <head>
+        <h1>This is a crispy (a.k.a awesome) form</h1>
+        <meta name="dj4e" content="4d1e4ae231d15747722cb11d984637cb">
+
+    </head>
+    {% endblock %}
+    {% block content %}
+    <body>
+        <p>
+            <!-- see INSTALLED_APPS in dj4e-samples/settings.py -->
+            {% load crispy_forms_tags %}
+            <form action="" method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="Submit">
+            <input type="submit"
+                onclick="window.location='{% url 'crispy:main' %}'; return false;" value="Cancel">
+            </form>
+        </p>
+
+
+    </body>
+    {% endblock %}
+</http>
