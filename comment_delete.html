@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+
+
+{% extends "base_bootstrap.html" %}
+{% block content %}
+    <head>
+        <h1>Delete Comment</h1>
+        <meta name="dj4e" content="42cb563a2a9c18b0f02e6b4fd92073e6">
+    </head>
+    <body>
+        <p>Are you sure you want to delete</p>
+        <p>{{ comment.text }}?</p>
+
+        <form action="" method="POST">
+        {% csrf_token %}
+        <input type="submit"  class="btn btn-primary" value="Yes, delete.">
+        <a href="{% url 'docslist:docsads_detail' comment.docsads.id %}" class="btn btn-secondary">Cancel</a>
+        </form>
+
+    </body>
+{% endblock %}
+
+</html>

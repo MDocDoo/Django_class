@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+
+    {% extends "base_menu.html" %}
+    {% block content %}
+
+        <head>
+            <meta name="dj4e" content="42cb563a2a9c18b0f02e6b4fd92073e6">
+        </head>
+            <h1>Docslist</h1>
+            <div style="float:right">
+            <!-- https://www.w3schools.com/howto/howto_css_search_button.asp -->
+            <form>
+                <input type="text" placeholder="Search.." name="search"
+                {% if search %} value="{{ search }}" {% endif %}
+                >
+                <button type="submit"><i class="fa fa-search"></i></button>
+            <a href="{% url 'docslist:all' %}"><i class="fa fa-undo"></i></a>
+            </form>
+            </div>
+
+
+        <body>
+            <p>
+            {% if docsads_list %}
+            <ul>
+                {% for docsads in docsads_list %}
+                    <li>
+                        <a href="{% url 'docslist:docsads_detail'  docsads.id %}">{{ docsads.title }}</a>
+                        {% if docsads.owner_id == user.id %}
+                            (<a href="{% url 'docslist:docsads_update' docsads.id %}">Edit</a> |
+                            <a href="{% url 'docslist:docsads_delete' docsads.id %}">Delete</a>)
+                        <br/>
+                        {% endif %}
+                        <div style="left:10px">
+                            {% if docsads.text|length < 100 %}
+                                {{ docsads.text }}
+                            {% else %}
+                                {{ docsads.text|slice:"0:99" }}
+                                <a href="{% url 'docslist:docsads_detail'  docsads.id %}">...</a>
+                            {% endif %}
+                        </div>
+                        <small>
+                        {% if docsads.owner.username %}
+                            posted by {{ docsads.owner.username }}
+                        {% endif %}
+                        {{ docsads.natural_updated }}
+                        </small>
+                        {% if user.is_authenticated %}
+                        <!-- Two hrefs with two stacked icons each - one showing and one hidden -->
+                        <a href="#" onclick=
+                            "favPost('{% url 'docslist:docsads_unfavorite' docsads.id %}', {{ docsads.id }} );return false;"
+                            {% if docsads.id not in favorites %} style="display: none;" {% endif %}
+                            id="favorite_star_{{docsads.id}}">
+                        <span class="fa-stack" style="vertical-align: middle;">
+                        <i class="fa fa-star fa-stack-1x" style="color: blue;"></i>
+                        <i class="fa fa-star-o fa-stack-1x"></i>
+                        </span>
+                        </a>
+                        <!-- the second href -->
+                        <a href="#" onclick=
+                            "favPost('{% url 'docslist:docsads_favorite' docsads.id %}', {{ docsads.id }} );return false;"
+                            {% if docsads.id in favorites %} style="display: none;" {% endif %}
+                            id="unfavorite_star_{{docsads.id}}">
+                        <span class="fa-stack" style="vertical-align: middle;">
+                        <i class="fa fa-star fa-stack-1x" style="display: none; color: blue;"></i>
+                        <i class="fa fa-star-o fa-stack-1x"></i>
+                        </span>
+                        </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                <p>There are no pics in the database</p>
+            {% endif %}
+            </p>
+            <p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'docslist:docsads_create' %}">Create Ad</a> |
+
+                <a href="{% url 'logout' %}?next={% url 'docslist:all' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}?next={% url 'docslist:all' %}">Login</a>
+            {% endif %}
+            </p>
+            <script>
+            function toggleInlineDisplay(star_id) {
+                var elem = document.getElementById(star_id);
+                if(window.getComputedStyle(elem).display == "inline") {
+                    elem.style.display = 'none';
+                    elem.dataset.previousDisplay = 'inline';
+                } else if(window.getComputedStyle(elem).display == "block") {
+                    elem.style.display = 'none';
+                    elem.dataset.previousDisplay = 'block';
+                } else {
+                    console.log('prev', elem.dataset.previousDisplay);
+                    if ( typeof elem.dataset.previousDisplay == 'string' ) {
+                        elem.style.display = elem.dataset.previousDisplay
+                    } else {
+                        elem.style.display = 'inline';
+                    }
+                }
+            }
+
+            function favPost(url, docsads_id) {
+                console.log('POSTing to', url);
+                fetch(url, { method: 'POST', body: '{}' } )
+                .then((response) => {
+                    console.log(url, 'finished');
+                    toggleInlineDisplay("unfavorite_star_"+docsads_id);
+                    toggleInlineDisplay("favorite_star_"+docsads_id);
+                }).catch((error) => {
+                    alert('Url failed with '+error+' '+url);
+                });
+            }
+            </script>
+
+        </body>
+    {% endblock %}
+</html>
+

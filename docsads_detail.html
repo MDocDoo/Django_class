@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+    {% extends "base_menu.html" %}
+    {% load humanize %} <!-- https://docs.djangoproject.com/en/4.2/ref/contrib/humanize -->
+    {% block head %}
+
+    <style>
+    .overlay{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        display: none;
+        background-color: rgba(0,0,0,0.5); /*dim the background*/
+    }
+    </style>
+    {% endblock %}
+    {% block content %}
+    {% if docsads.content_type %}
+    <div id="overlay" class="overlay" style="text-align: center;"
+        onclick="document.getElementById('overlay').style.display = 'none';" >
+    <img style="width:90%;margin-top: 50px; border:3px solid black;" src="{% url 'docslist:docsads_picture' docsads.id %}">
+    </div>
+    {% endif %}
+    <span style="float: right;">
+    ({{ docsads.updated_at|naturaltime }})
+    {% if docsads.owner == user %}
+    <a href="{% url 'docslist:docsads_update' docsads.id %}"><i class="fa fa-pencil"></i></a>
+    <a href="{% url 'docslist:docsads_delete' docsads.id %}"><i class="fa fa-trash"></i></a>
+    {% endif %}
+    </span>
+    <head>
+        <h1>{{ docsads.title }}</h1>
+        <meta name="dj4e" content="42cb563a2a9c18b0f02e6b4fd92073e6">
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+
+        {% if docsads.content_type %}
+        <img style="float:right; max-width:50%;" src="{% url 'docslist:docsads_picture' docsads.id %}"
+            onclick="document.getElementById('overlay').style.display = 'block';">
+        {% endif %}
+    </head>
+    <body>
+        <p>
+        </p>
+        <p>
+        <p>Price ${{ docsads.price }}</p>
+        </p>
+        <p>
+        {{ docsads.text }}
+        </p>
+        {% if docsads.tags.all %}
+        <p>Tags:
+            {% for tag in docsads.tags.all %}
+            <span style="border:1px grey solid; background-color: LightGreen;">{{ tag }}</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+        </p>
+
+        ({{ docsads.updated_at|naturaltime }})
+
+        {% if user.is_authenticated %}
+        <br clear="all"/>
+        <p>
+        {% load crispy_forms_tags %}
+        <form method="post" action="{% url 'docslist:docsads_comment_create' docsads.id %}">
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+        <input type="submit" value="Submit">
+        <input type="submit" value="All Docslist" onclick="window.location.href='{% url 'docslist:all' %}';return false;">
+        </form>
+        </p>
+        {% endif %}
+        {% for comment in comments %}
+        <p> {{ comment.text }}
+        ({{ comment.updated_at|naturaltime }})
+        {% if user == comment.owner %}
+        <a href="{% url 'docslist:docsads_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+        {% endif %}
+        </p>
+        <p>
+        <a href="{% url 'docslist:all' %}">Docslist: All</a>
+        </p>
+        {% endfor %}
+
+
+    </body>
+
+    {% endblock %}
+
+</html>

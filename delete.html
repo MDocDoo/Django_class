@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+
+{% extends "base_bootstrap.html" %}
+{% block content %}
+<h1>Delete Ad</h1>
+<meta name="dj4e" content="42cb563a2a9c18b0f02e6b4fd92073e6">
+
+<p>Are you sure you want to delete the ad: {{ docsads }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Yes, delete.">
+</form>
+{% endblock %}
+</html>
