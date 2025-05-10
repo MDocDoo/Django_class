@@ -1,0 +1,20 @@
+<http>
+    {% extends "base_bootstrap.html" %}
+    {% block content %}
+    <head>
+        <meta name="dj4e" content="4d1e4ae231d15747722cb11d984637cb">
+        <h1>Delete Breed</h1>
+    </head>
+    <body>
+
+        <p>Are you sure you want to delete the breed: {{ breed }}?</p>
+
+        <form action="" method="POST">
+           {% csrf_token %}
+           <input type="submit" value="Yes, delete.">
+           <input type="submit" onclick="window.location='{% url 'cats:all' %}' ; return false;" value="Cancel">
+        </form>
+
+    {% endblock %}
+    </body>
+</http>
